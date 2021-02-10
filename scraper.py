@@ -15,12 +15,15 @@ def get(url):
     date = {}
 
     events = soup.findAll("div", {"class", "infos-account"})
-
     for i in events:
-        if i.find("div", {"class", "col-xs-8 col-sm-9 col-md-9"}).text.replace("\n", "") == "Colis livré au destinataire":
-            data.update({"delivered": True})
-        date.update({(i.find("div", {"class", "col-xs-4 col-sm-3 col-md-3"}).text.replace("\n", "")): (i.find("div", {"class", "col-xs-8 col-sm-9 col-md-9"}).text.replace("\n", ""))})
-
+        event_date=i.findAll("strong")[0].text
+        for j in i.findAll("div", {"class", "step-suivi line-t"}):
+            try:
+                if j.findAll("p")[1].text.replace("\n", "") == "Colis livré au destinataire":
+                    data.update({"delivered": True})
+                date.update({event_date+j.findAll("p")[0].text.replace("\n", ""): j.findAll("p")[1].text.replace("\n", "")})
+            except:
+                pass
     data.update({"events": date})
 
     return data
